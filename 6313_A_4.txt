@@ -1,0 +1,165 @@
+> library(gvlma)
+> packageVersion("gvlma")
+[1] ‘1.0.0.3’
+> 
+> # Load the dataset
+> data <- read.table("Assignment4_2025.dat", header = TRUE)
+> head(data)
+  age income education tenure sales    id
+1  43  80152        13      5   255 10429
+2  57  69945        13      3   238  9325
+3  36  56046        12      5   239 11257
+4  44  75976        16      4   200  9683
+5  35  41000        10      6   211  9921
+6  51  72608        11      2   124  9414
+> summary(data)
+      age            income        education         tenure         sales             id       
+ Min.   :22.00   Min.   :40367   Min.   : 8.00   Min.   :1.00   Min.   : 72.0   Min.   : 7905  
+ 1st Qu.:38.00   1st Qu.:63507   1st Qu.:10.00   1st Qu.:3.00   1st Qu.:166.2   1st Qu.: 9747  
+ Median :45.00   Median :70091   Median :12.00   Median :4.50   Median :208.0   Median :10120  
+ Mean   :45.61   Mean   :70745   Mean   :11.69   Mean   :4.51   Mean   :204.7   Mean   :10171  
+ 3rd Qu.:54.00   3rd Qu.:77295   3rd Qu.:13.00   3rd Qu.:5.25   3rd Qu.:242.2   3rd Qu.:10528  
+ Max.   :67.00   Max.   :94019   Max.   :16.00   Max.   :8.00   Max.   :359.0   Max.   :12258  
+> 
+> # Fit the linear regression model
+> model.lm <- lm(sales ~ age + income + education + tenure, data = data)
+> summary(model.lm)
+
+Call:
+lm(formula = sales ~ age + income + education + tenure, data = data)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-127.405  -28.469    4.437   32.239  138.735 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)   
+(Intercept) 1.542e-01  4.409e+01   0.003  0.99722   
+age         2.906e-01  6.059e-01   0.480  0.63263   
+income      5.935e-04  5.703e-04   1.041  0.30067   
+education   9.898e+00  3.530e+00   2.804  0.00612 **
+tenure      7.438e+00  3.320e+00   2.241  0.02737 * 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 51.91 on 95 degrees of freedom
+Multiple R-squared:  0.2095,	Adjusted R-squared:  0.1762 
+F-statistic: 6.294 on 4 and 95 DF,  p-value: 0.0001548
+
+> 
+> # Assumption checking for GVLMA
+> model.gvl <- gvlma(model.lm)
+> summary(model.gvl)
+
+Call:
+lm(formula = sales ~ age + income + education + tenure, data = data)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-127.405  -28.469    4.437   32.239  138.735 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)   
+(Intercept) 1.542e-01  4.409e+01   0.003  0.99722   
+age         2.906e-01  6.059e-01   0.480  0.63263   
+income      5.935e-04  5.703e-04   1.041  0.30067   
+education   9.898e+00  3.530e+00   2.804  0.00612 **
+tenure      7.438e+00  3.320e+00   2.241  0.02737 * 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 51.91 on 95 degrees of freedom
+Multiple R-squared:  0.2095,	Adjusted R-squared:  0.1762 
+F-statistic: 6.294 on 4 and 95 DF,  p-value: 0.0001548
+
+
+ASSESSMENT OF THE LINEAR MODEL ASSUMPTIONS
+USING THE GLOBAL TEST ON 4 DEGREES-OF-FREEDOM:
+Level of Significance =  0.05 
+
+Call:
+ gvlma(x = model.lm) 
+
+                    Value p-value                Decision
+Global Stat        3.4960  0.4785 Assumptions acceptable.
+Skewness           0.1480  0.7005 Assumptions acceptable.
+Kurtosis           0.1280  0.7205 Assumptions acceptable.
+Link Function      0.8297  0.3624 Assumptions acceptable.
+Heteroscedasticity 2.3903  0.1221 Assumptions acceptable.
+> 
+> # X-outliers (based on hat values):
+> hv <- as.data.frame(hatvalues(model.lm))
+> colnames(hv) <- c("hatvalues")
+> hv$id <- data$id    
+> mn <- mean(hv$hatvalues)
+> hv$warn <- ifelse(hv$hatvalues > 3 * mn, 'x3',
++                   ifelse(hv$hatvalues > 2 * mn, 'x2', '-'))
+> x_outliers <- subset(hv, warn %in% c("x2", "x3"))
+> x_outliers
+   hatvalues    id warn
+5  0.1133394  9921   x2
+38 0.1083257 10663   x2
+85 0.1101451 10305   x2
+> 
+> # Y-outliers (based on rstudent):
+> rs <- as.data.frame(rstudent(model.lm))
+> colnames(rs) <- c("rstudent")
+> rs$id <- data$id
+> critval <- qt(.95, nrow(rs) - 2 - 1)
+> rs$warn <- ifelse(abs(rs$rstudent) > critval, 'Warn', '-')
+> subset(rs, warn == "Warn")
+    rstudent    id warn
+25 -1.706594 10166 Warn
+28 -2.075224 10805 Warn
+37 -2.093345 10231 Warn
+50 -2.641086 10195 Warn
+55  1.723442 10566 Warn
+76  2.645459  9670 Warn
+79  1.878626 10375 Warn
+82 -2.299311  9716 Warn
+86 -2.040518  9776 Warn
+89 -1.800273 10126 Warn
+96  2.898865 11636 Warn
+99  1.811952  7905 Warn
+> 
+> # Identify influential observations using dfbetas
+> dfb <- as.data.frame(dfbetas(model.lm))
+> dfb$id <- data$id
+> critval <- 2 / sqrt(nrow(dfb))
+> dfb$Warn <- ifelse(abs(dfb[, 1:ncol(dfb) - 1]) > critval, "Warn", "-")
+> 
+> # Influential observations for intercept:
+> intercept_influential <- dfb$id[dfb$Warn[, 1] == "Warn"]
+> intercept_influential
+[1] 10632 10011  9670 10126
+> 
+> # Influential observations for age:
+> age_influential <- dfb$id[dfb$Warn[, 2] == "Warn"]
+> age_influential
+[1] 10011 10195  9716  7905
+> 
+> # Influential observations for income:
+> income_influential <- dfb$id[dfb$Warn[, 3] == "Warn"]
+> income_influential
+[1]  9921 10166 10231  9870  9806  9670  9776
+> 
+> # Influential observations for education:
+> education_influential <- dfb$id[dfb$Warn[, 4] == "Warn"]
+> education_influential
+[1]  9683 10011 10195  9171  9670  9776 10126 11636
+> 
+> # Influential observations for tenure:
+> tenure_influential <- dfb$id[dfb$Warn[, 5] == "Warn"]
+> tenure_influential
+[1] 10805 10195  9171  9670  9716  9776 10126 11636  7905
+> 
+> # Influential observations based on Cook's D:
+> cd <- as.data.frame(cooks.distance(model.lm))
+> colnames(cd) <- "CooksD"
+> rs$id <- data$id
+> critval <- qf(0.50, 2, nrow(cd)-2)
+> cd$warn <- ifelse(abs(cd$CooksD)>critval, 'Warn', '-')
+> subset(cd, warn == "Warn")    
+[1] CooksD warn  
+<0 rows> (or 0-length row.names)
+> 
