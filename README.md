@@ -37,7 +37,7 @@ This repository contains all materials for the "Lab 4: Statistics for Analytics 
 P-value: Indicates statistical significance in multivariate level using 95% confidence level.  
 b-value: Represents the magnitude and direction of 'slope' of independent variable(s)
 
-### Version of the Modeling Software:  
+### Version of the Modeling Software and R libraries:  
 - **R:** 4.3.2  
 - **dplyr:** 1.1.4
 - **gvlma:** 1.0.0.3
