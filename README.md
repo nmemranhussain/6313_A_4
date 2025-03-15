@@ -1,2 +1,3 @@
-Ergonomic Systems Sales Analysis Project
+#Ergonomic Systems Sales Analysis Project
+
 This repository contains all materials for the "Lab 4: Statistics for Analytics II" assignment from George Washington University, focusing on a statistical analysis for Ergonomic Systems Inc. (ESI). The project utilizes R to analyze a dataset featuring customer demographics and sales data to determine key predictors of sales volume. It includes rigorous data cleaning, linear regression modeling, and extensive diagnostics to assess model assumptions and identify outliers and influential points. Specific scripts handle tasks like outlier detection using hat values, assessing model fit with the Generalized Linear Model Assumption (GVLMA) tool, and influence analysis with DFBETAS. The repository is designed for complete transparency, allowing others to replicate the study or explore the methods used in statistical analysis.
