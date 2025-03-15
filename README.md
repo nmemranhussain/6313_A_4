@@ -10,9 +10,9 @@ This repository contains all materials for the "Lab 4: Statistics for Analytics 
 **License:** [MIT License](LICENSE)
 
 ## Intended Use
-**Purpose:** The purpose of this project is to analyze customer sales data to identify key variables that influence sales, detect outliers, and assess influential data points using statistical techniques and regression diagnostics. 
-**Intended Users:** Data Analysts, Data scientists, machine learning enthusiasts, educators.  
-**Out-of-scope Uses:** The model is not intended for production use in any critical applications or real-time decision-making systems.
+**Purpose:** The purpose of this project is to analyze customer sales data to identify key variables that influence sales, detect outliers, and assess influential data points using statistical techniques and regression diagnostics.   
+**Intended Users:** Data Analysts, Data scientists, machine learning enthusiasts, educators.    
+**Out-of-scope Uses:** The model is not intended for production use in any critical applications or real-time decision-making systems.  
 
 ## Data Description
 
